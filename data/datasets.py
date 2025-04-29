@@ -20,7 +20,7 @@ class SentimentDataset(Dataset):
         self.labels = labels
         self.tokenizer = tokenizer
         self.max_length = max_length
-        
+
     def __len__(self) -> int:
         return len(self.texts)
 
@@ -69,7 +69,9 @@ class SentimentDataset(Dataset):
     '''
     Load the sarcasm dataset and apply some cuts to it
     '''
-    def getSarcasmDataset(removeStopwords:      bool = True,
+    @classmethod
+    def getSarcasmDataset(cls,
+                          removeStopwords:      bool = True,
                           removeShortHeadlines: int = 3) -> pd.DataFrame:
 
         # get the stopwords from both nltk and string (for punctuation)
@@ -77,11 +79,13 @@ class SentimentDataset(Dataset):
         stopwords   = set(nltk.corpus.stopwords.words('english'))
         punctuation = list(string.punctuation)
         stopwords.update(punctuation)
+        stopwords.update(['\'s'])
 
         # load the json into pandas dataframe
-        df = pd.read_json(filename, lines=True)
+        print(cls.filename)
+        df = pd.read_json(cls.filename, lines=True)
         df = df[df['headline'] != '']
-        df.drop('article_link', inplace=True, axis=1)
+        if 'article_link' in df.columns: df.drop('article_link', inplace=True, axis=1)
         if removeStopwords:
             df['headline']=df['headline'].apply(SentimentDataset.remove_stopwords, args=(stopwords,))
         if removeShortHeadlines >= 0:
