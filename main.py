@@ -6,8 +6,8 @@ from plotting.plots      import horizontal_bar
 from data.datasets       import SentimentDataset, SarcasticTrumpDataset
 from data.weighting      import WeightingTool
 
-df = SentimentDataset.getSarcasmDataset()
-wt = WeightingTool(df) # automatically applies the weights to df 
+ds = SentimentDataset()
+wt = WeightingTool(ds.df) # automatically applies the weights to df 
 
 #
 # Plot the unweighted data for word length
@@ -15,7 +15,7 @@ wt = WeightingTool(df) # automatically applies the weights to df
 
 plt.figure(figsize=(6, 6))
 ax = plt.gca()
-sns.histplot(data=df, x='length', hue='is_sarcastic', multiple='layer',
+sns.histplot(data=ds.df, x='length', hue='is_sarcastic', multiple='layer',
              bins=[i for i in range(25)],
              element='step',
              palette=['blue', 'red'], alpha=0.0)
@@ -28,7 +28,7 @@ plt.show()
 
 plt.figure(figsize=(6, 6))
 ax = plt.gca()
-sns.histplot(data=df, x='length', hue='is_sarcastic', multiple='layer',
+sns.histplot(data=ds.df, x='length', hue='is_sarcastic', multiple='layer',
              weights='weight',
              bins=[i for i in range(25)],
              element='step',
@@ -42,7 +42,7 @@ plt.show()
 
 plt.figure(figsize=(6, 6))
 ax = plt.gca()
-sns.histplot(data=df,
+sns.histplot(data=ds.df,
              x='weight',
              hue='is_sarcastic',
              multiple='layer',
@@ -98,7 +98,7 @@ horizontal_bar([word_freq_sarc, word_freq_not_sarc],
 
 plt.figure(figsize=(6, 6))
 ax = plt.gca()
-sns.histplot(data=df, x='length', hue='is_sarcastic', multiple='layer',
+sns.histplot(data=ds.df, x='length', hue='is_sarcastic', multiple='layer',
              weights='weight',
              bins=[i for i in range(25)],
              element='step',
@@ -109,8 +109,8 @@ plt.show()
 #
 # Compare word frequency to the trump clickhole dataset
 #
-dfTrump = SarcasticTrumpDataset.getSarcasmDataset()
-wtTrump = WeightingTool(dfTrump, autoBalance=False)
+dsTrump = SarcasticTrumpDataset()
+wtTrump = WeightingTool(dsTrump.df, autoBalance=False)
 wtTrump.fill_dictionaries()
 trump_freq_sarc, _ = wtTrump.getFrequencyTables(features=[item[1] for item in unwgt_word_freq_sarc])
 horizontal_bar([word_freq_sarc, word_freq_not_sarc, trump_freq_sarc],

@@ -1,35 +1,38 @@
 import torch
-import numpy as np
 
+from torch.optim             import Adam
 from torch.utils.data        import Dataset, DataLoader
-from transformers            import BertTokenizer, BertForSequenceClassification, AdamW
+from torchinfo               import summary
+from transformers            import BertTokenizer, BertForSequenceClassification
 from transformers            import get_linear_schedule_with_warmup
 from sklearn.model_selection import train_test_split
+from tqdm.auto               import tqdm
 
+from data.datasets           import SentimentDataset
 
 # Set random seeds for reproducibility
 seed_val = 42
-np.random.seed(seed_val)
 torch.manual_seed(seed_val)
 torch.cuda.manual_seed_all(seed_val)
 
-# load the data frame
+# load the dataset
 df = SentimentDataset.getSarcasmDataset()
+df = df[:1000]
 
 # Split into train and validation sets
-train_texts, val_texts, train_labels, val_labels = train_test_split(
-    df['headline'], df['is_sarcastic'], test_size=0.2, random_state=seed_val
-)
+train_df, val_df = train_test_split(df, test_size=0.2, random_state=seed_val)
 
 # Initialize tokenizer
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 
 # Create datasets
-train_dataset = SentimentDataset(train_texts, train_labels, tokenizer)
-val_dataset = SentimentDataset(val_texts, val_labels, tokenizer)
+train_dataset = SentimentDataset(dataframe=train_df,
+                                 tokenizer=tokenizer)
+val_dataset   = SentimentDataset(dataframe=train_df,
+                                 tokenizer=tokenizer)
 
 # Create data loaders
-batch_size = 4
+batch_size = 128
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 val_dataloader = DataLoader(val_dataset, batch_size=batch_size)
 
@@ -46,8 +49,22 @@ model = BertForSequenceClassification.from_pretrained(
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.to(device)
 
+
+# Freeze all parameters
+for param in model.parameters():
+    param.requires_grad = False
+
+# Unfreeze only the pooler layer parameters
+# In BertForSequenceClassification, the pooler is part of the bert module
+for param in model.bert.pooler.parameters():
+    param.requires_grad = True
+
+# Unfreeze the classifier layer as well (which is on top of the pooler)
+for param in model.classifier.parameters():
+    param.requires_grad = True
+
 # Set up optimizer and learning rate scheduler
-optimizer = AdamW(model.parameters(), lr=2e-5, eps=1e-8)
+optimizer = Adam(model.parameters(), lr=2e-5, eps=1e-8)
 
 # Number of training epochs
 epochs = 4
@@ -62,6 +79,10 @@ scheduler = get_linear_schedule_with_warmup(
     num_training_steps=total_steps
 )
 
+summary(model)
+import sys
+
+
 # Training loop
 def train():
     # Set model to training mode
@@ -69,9 +90,11 @@ def train():
     
     # Track loss
     total_loss = 0
+
+    progress_bar = tqdm(train_dataloader, desc="Training", leave=True)
     
     # Train the model
-    for batch in train_dataloader:
+    for batch in progress_bar:
         # Clear gradients
         optimizer.zero_grad()
         
@@ -94,6 +117,8 @@ def train():
         
         # Backward pass
         loss.backward()
+
+        progress_bar.set_description(f"Training - Loss: {loss.item():.4f}")
         
         # Clip gradients
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -116,9 +141,11 @@ def evaluate():
     # Track variables
     total_eval_accuracy = 0
     total_eval_loss = 0
+
+    progress_bar = tqdm(val_dataloader, desc="Evaluating", leave=True)
     
     # Evaluate data
-    for batch in val_dataloader:
+    for batch in progress_bar:
         # Get inputs
         input_ids = batch['input_ids'].to(device)
         attention_mask = batch['attention_mask'].to(device)
@@ -143,6 +170,8 @@ def evaluate():
         predictions = torch.argmax(logits, dim=1)
         accuracy = (predictions == labels).float().mean().item()
         total_eval_accuracy += accuracy
+        
+        progress_bar.set_description(f"Evaluating - Loss: {loss.item():.4f}, Acc: {accuracy:.4f}")
     
     # Calculate average accuracy and loss
     avg_val_accuracy = total_eval_accuracy / len(val_dataloader)

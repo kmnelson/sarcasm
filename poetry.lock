@@ -1818,6 +1818,18 @@ files = [
 torch = "2.7.0"
 
 [[package]]
+name = "torchinfo"
+version = "1.8.0"
+description = "Model summary in PyTorch, based off of the original torchsummary."
+optional = false
+python-versions = ">=3.7"
+groups = ["main"]
+files = [
+    {file = "torchinfo-1.8.0-py3-none-any.whl", hash = "sha256:2e911c2918603f945c26ff21a3a838d12709223dc4ccf243407bce8b6e897b46"},
+    {file = "torchinfo-1.8.0.tar.gz", hash = "sha256:72e94b0e9a3e64dc583a8e5b7940b8938a1ac0f033f795457f27e6f4e7afa2e9"},
+]
+
+[[package]]
 name = "torchvision"
 version = "0.22.0"
 description = "image and video datasets and models for torch deep learning"
@@ -2025,4 +2037,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "79f42d9720fe066a408fbe6ee334f880f6900c39755d63190ab91a4fc0c83d0b"
+content-hash = "0c02f672e94b4695ccf6ef1349e2610400f6c8e46c9a79a86c53710834e98d73"

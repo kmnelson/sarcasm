@@ -4,6 +4,7 @@ import pandas as pd
 import string
 import nltk
 
+from   transformers     import PreTrainedTokenizerBase
 from   torch.utils.data import Dataset
 
 '''
@@ -12,13 +13,16 @@ Custom pytorch Dataset for loading the sentiment data
 class SentimentDataset(Dataset):
     filename = 'data/Sarcasm_Headlines_Dataset.json'
     def __init__(self,
-                 texts,
-                 labels,
-                 tokenizer,
+                 dataframe: pd.DataFrame            | None = None,
+                 tokenizer: PreTrainedTokenizerBase | None = None,
                  max_length=128):
-        self.texts = texts
-        self.labels = labels
-        self.tokenizer = tokenizer
+        if dataframe is None:
+            self.df     = self.__class__.getSarcasmDataset()
+        else:
+            self.df     = dataframe
+        self.texts      = self.df['headline'].values
+        self.labels     = self.df['is_sarcastic'].values
+        self.tokenizer  = tokenizer
         self.max_length = max_length
 
     def __len__(self) -> int:
@@ -29,6 +33,10 @@ class SentimentDataset(Dataset):
     '''
     def __getitem__(self,
                     idx: int) -> dict:
+
+        if self.tokenizer is None:
+            raise AttributeError('Tokenizer must be initialized to get items from dataset')
+        
         text = self.texts[idx]
         label = self.labels[idx]
         
@@ -82,7 +90,6 @@ class SentimentDataset(Dataset):
         stopwords.update(['\'s'])
 
         # load the json into pandas dataframe
-        print(cls.filename)
         df = pd.read_json(cls.filename, lines=True)
         df = df[df['headline'] != '']
         if 'article_link' in df.columns: df.drop('article_link', inplace=True, axis=1)

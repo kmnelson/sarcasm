@@ -107,24 +107,16 @@ class WeightingTool:
         # get current normalizations
         nSarc    = self.df[self.df['is_sarcastic']==1]['weight'].sum()
         nNotSarc = self.df[self.df['is_sarcastic']==0]['weight'].sum()
-        print(self.df.head(10))
-        print(nSarc)
-        print(nNotSarc)
-        print(self.df['headline'].str.contains('trump')[:10])
         for feature in features:
-            print(feature)
             cond_in = (self.df['is_sarcastic']==1) & (self.df['headline'].str.contains(feature))
             cond_out= (self.df['is_sarcastic']==1) & (~ self.df['headline'].str.contains(feature))
-            print(cond_in.sum())
-            print(cond_out.sum())
             pFeatSarc    = self.df[cond_in]['weight'].sum()/nSarc
             pNotFeatSarc = 1-pFeatSarc
             pFeatNotSarc = self.df[(self.df['is_sarcastic']==0) & (self.df['headline'].str.contains(feature))]['weight'].sum()/nNotSarc
             pNotFeatNotSarc = 1-pFeatNotSarc
-            print(pFeatSarc, pFeatNotSarc)
             self.df.loc[cond_in,  'weight'] = self.df.loc[cond_in, 'weight']*pFeatNotSarc/pFeatSarc
             self.df.loc[cond_out, 'weight'] = self.df.loc[cond_out, 'weight']*pNotFeatNotSarc/pNotFeatSarc
-        print(self.df.head(10))
+
         # recompute dictionary values
         self.fill_dictionaries()
 
