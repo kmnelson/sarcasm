@@ -57,7 +57,19 @@
             margin: 30px 0;
             text-align: center;
         }
+
+        .figures-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin: 30px 0;
+        }
         
+        .figure-container-half {
+            flex: 1;
+            text-align: center;
+        }
+	
         .figure {
             max-width: 100%;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
@@ -140,7 +152,7 @@
     
     <h2>Introduction</h2>
     <p>
-      This repository studies improvements in generalization of fine-tuned BERT models on sarcasm detection.  The sarcasm detection dataset used consists of headlines from The Onion and HuffPost.  The distribution of individual features in the data was highly skewed: for example, the words "Donald" or "Trump" almost exclusively occured in the HuffPost headlines, and rarely in headlines from The Onion.  Of course, this may lead to a model which predicts any sentence referencing Donald Trump to not be sarcastic, while some of them may be.  In order to address this, the dataset was weighted to balance the individual feature frequency across the headlines from The Onion and HuffPost.  Then, the two trained models were compared on a dataset of headlines from a sibling publication of The Onion, Clickhole, to test if any improvement in Trump-centric sarcasm was measured.
+      This repository studies improvements in generalization of fine-tuned BERT [1] models on sarcasm detection.  The sarcasm detection dataset used consists of headlines from The Onion and HuffPost [2].  The distribution of individual features in the data was highly skewed: for example, the words "Donald" or "Trump" almost exclusively occured in the HuffPost headlines, and rarely in headlines from The Onion.  Of course, this may lead to a model which predicts any sentence referencing Donald Trump to not be sarcastic, while some of them may be.  In order to address this, the dataset was weighted to balance the individual feature frequency across the headlines from The Onion and HuffPost.  Then, the two trained models were compared on a dataset of headlines from a sibling publication of The Onion, Clickhole, to test if any improvement in Trump-centric sarcasm was measured.
     </p>
     
     <p>
@@ -153,22 +165,46 @@
     
     <h2>Methodology</h2>
     <p>
-      
+      Figure 1 shows the frequency of the top 20 words for both the sarcastic and non-sarcastic datasets.  Stopwords are removed from the datasets before computing word frequency.  The top words from sarcastic headlines come from formats like "Area man..." and "New Report: ...".  These seem to be related to the dataset's (purposeful) bias towards headlines.  In the non-sarcastic data however, there is a heavy bias towards specific nouns including Donald Trump.  It appears that the sarcastic headlines are a more formulaic caricature of news, and mention specific figures less.  This relative difference in the occurance of specific features in the dataset is addressed by weighting the data to remove the bias.
     </p>
     
-    <div class="figure-container">
-      <img src="figures/frequencySarcasticUnweighted.png" alt="Relative frequency of words in sarcastic headlines" class="figure">
-      <img src="figures/frequencyNonSarcasticUnweighted.png" alt="Relative frequency of words in non-sarcastic headlines" class="figure">
-        <p class="caption"><strong>Figure 1:</strong> </p>
+    <div class="figures-row">
+        <div class="figure-container-half">
+            <img src="figures/frequencyNonSarcasticUnweighted.png" alt="Non sarcastic frequency" class="figure">
+            <p class="caption"><strong>Figure 1A:</strong> Top non-sarcastic words and the relative frequency in the sarcastic data.</p>
+        </div>
+        <div class="figure-container-half">
+            <img src="figures/frequencySarcasticUnweighted.png" alt="Sarcastic frequency" class="figure">
+            <p class="caption"><strong>Figure 1B:</strong> Top sarcastic words and the relative frequency in the non-sarcastic data.</p>
+        </div>
     </div>
-    
-    <h2>Key Findings</h2>
-    
-    <h3>Finding 1: </h3>
-    <p>
 
+    <p>
+      The weighting procedure is to first weight by the length of the headline, and then by a set of specific terms one by one in order to account for the imbalance between the headlines from The Onion and HuffPost.  The list of words used focuses on the largest imbalances seen in the top 20 words, and is ordered with likely more specific terms coming first.  For example, "donald" is weighted before "trump" because nearly all headlines with "donald" will have the word "trump", but not vice-versa.  The list of words weighted by is: gop, donald, trump, man, area, report, says, women, nation.  The weighted distributions of word frequency are shown in Figure 2.
     </p>
-        
+
+    <div class="figures-row">
+        <div class="figure-container-half">
+            <img src="figures/frequencyNonSarcasticWeighted.png" alt="Non sarcastic frequency" class="figure">
+            <p class="caption"><strong>Figure 2A:</strong> Top non-sarcastic words and the relative frequency in the sarcastic data, after weighting.</p>
+        </div>
+        <div class="figure-container-half">
+            <img src="figures/frequencySarcasticWeighted.png" alt="Sarcastic frequency" class="figure">
+            <p class="caption"><strong>Figure 2B:</strong> Top sarcastic words and the relative frequency in the non-sarcastic data, after weighting.</p>
+        </div>
+    </div>
+
+    <p>
+      The distributions of weighted frequency demonstrate higher agreement, but a sample of Trump-centered sarcasm is needed as a benchmark to test if any improvement in accuracy is seen.  A sample of headlines from Clickhole, a sibling publication of The Onion, is used as a final validation dataset in the fine-tuning.  Figure 3 shows the distribution of feature frequency in the Clickhole Trump-centered dataset vs the sarcastic and non-sarcastic dataset.  By definition, every headline in the Clickhole dataset will include the word "trump".
+    </p>
+
+    <div class="figure-container">
+        <img src="/api/placeholder/600/350" alt="Trump-centered sarcasm" class="figure">
+        <p class="caption"><strong>Figure 3:</strong> Top words in the sarcastic and non-sarcastic datasets, compared to a sample of Trump-centric sarcasm.</p>
+    </div>
+
+    Finally, BERT models are fine-tuned using a cross-entropy loss with the weighted and unweighted datasets.  The two models are then tested for accuracy on the Trump-centric sarcasm dataset.  The accuracy is 22% for the unweighted model, and 25% for the weighted model.  Simultaneously, the weighted model has a higher F1 score on the original sarcasm dataset by 20%, suggesting that the model is learning deeper features because it is performing better on both the training and validation/testing sets.
+    
     <div class="conclusion">
         <h3>Conclusion</h3>
         <p>
@@ -179,6 +215,7 @@
     <div class="references">
         <h2>References</h2>
         <ol>
+	    <li>Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova <a href="https://arxiv.org/abs/1810.04805"></a>BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</li>
             <li>Rishabh Misra <a href="https://www.kaggle.com/datasets/rmisra/news-headlines-dataset-for-sarcasm-detection/data">News Headlines Dataset For Sarcasm Detection</a></li>
         </ol>
     </div>
