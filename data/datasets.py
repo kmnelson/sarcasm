@@ -22,6 +22,7 @@ class SentimentDataset(Dataset):
             self.df     = dataframe
         self.texts      = self.df['headline'].values
         self.labels     = self.df['is_sarcastic'].values
+        self.weights    = self.df['weight'].values
         self.tokenizer  = tokenizer
         self.max_length = max_length
 
@@ -37,8 +38,9 @@ class SentimentDataset(Dataset):
         if self.tokenizer is None:
             raise AttributeError('Tokenizer must be initialized to get items from dataset')
         
-        text = self.texts[idx]
+        text  = self.texts[idx]
         label = self.labels[idx]
+        wgt   = self.weights[idx]
         
         encoding = self.tokenizer(
             text,
@@ -55,7 +57,8 @@ class SentimentDataset(Dataset):
             'input_ids': encoding['input_ids'].flatten(),
             'attention_mask': encoding['attention_mask'].flatten(),
             'token_type_ids': encoding['token_type_ids'].flatten(),
-            'labels': torch.tensor(label, dtype=torch.long)
+            'labels': torch.tensor(label, dtype=torch.long),
+            'weights': torch.tensor(wgt, dtype=torch.float)
         }
 
     ####
@@ -97,6 +100,13 @@ class SentimentDataset(Dataset):
             df['headline']=df['headline'].apply(SentimentDataset.remove_stopwords, args=(stopwords,))
         if removeShortHeadlines >= 0:
             df = df[[len(row['headline'].split()) >= removeShortHeadlines for _, row in df.iterrows()]]
+
+        # if weight and length are not keys in the dataframe, add them
+        if not 'length' in df.columns:
+            df['length'] = [len(row['headline'].split()) for _, row in df.iterrows()]
+        if not 'weight' in df.columns:
+            df['weight'] = [1.0 for _, row in df.iterrows()]
+        
         return df
 
 '''

@@ -3,6 +3,53 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
+from plotting.mpl_config      import setup_minor_ticks
+
+'''
+Create a histogram from a dataframe
+The plot will be saved to a file
+
+Args: 
+    dataframe: pandas dataframe 
+    x:         column name to plot
+    hue:       column name to separate multiple histograms
+    fname:     output name of file
+    bins:      list of bin edges
+    weights:   column name for weights (Optional)
+'''
+def wireHistogram(dataframe: pd.DataFrame,
+                  x:         str,
+                  hue:       str,
+                  fname:     str,
+                  bins:      list,
+                  weights:   str | None = None,
+                  show:      bool = True,
+                  ):
+    os.makedirs('figures', exist_ok=True)
+    
+    plt.figure(figsize=(6, 6))
+    ax = plt.gca()
+
+    default_kwargs = {
+        'multiple':'layer',
+        'element':'step',
+        'palette':['blue', 'red'],
+        'alpha':0.0,        
+        }
+
+    if weights: default_kwargs['weights'] = weights
+    
+    sns.histplot(data=dataframe,
+                 x=x,
+                 hue=hue,
+                 bins=bins,
+                 **default_kwargs
+                 )
+    setup_minor_ticks(ax)
+
+    plt.savefig(os.path.join('figures', fname))
+    if show: plt.show()
+
 '''
 Create a horizontal bar chart
 The user can supply a list of frequency tables, each table will produce a new 
@@ -22,7 +69,8 @@ def horizontal_bar(freq: list[list[list]],
                    category: list,
                    title: str="Top Sarcastic Words",
                    fname: str="horizontal_bar.pdf",
-                   maxwords: int=20) -> None:
+                   maxwords: int=20,
+                   show: bool = True) -> None:
     os.makedirs('figures', exist_ok=True)
     
     # normalize each entry to the maximum
@@ -68,5 +116,5 @@ def horizontal_bar(freq: list[list[list]],
     
     # Show plot
     plt.savefig(os.path.join('figures', fname))
-    plt.show()
+    if show: plt.show()
     

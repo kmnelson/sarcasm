@@ -17,12 +17,6 @@ class WeightingTool:
 
         self.df = df
 
-        # if weight and length are not keys in the dataframe, add them
-        if not 'length' in self.df.columns:
-            self.df['length'] = [len(row['headline'].split()) for _, row in self.df.iterrows()]
-        if not 'weight' in self.df.columns:
-            self.df['weight'] = [1.0 for _, row in self.df.iterrows()]
-
         if autoBalance:
             self.applyLengthBalance()
             self.applySemanticBalance()
