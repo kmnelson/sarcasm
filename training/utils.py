@@ -95,6 +95,7 @@ def evaluateModel(model:      nn.Module,
     total_eval_loss = 0
 
     progress_bar = tqdm(dataloader, desc="Evaluating", leave=True)
+    TP, FP, TN, FN = 0, 0, 0, 0
     
     for batch in progress_bar:
 
@@ -117,18 +118,25 @@ def evaluateModel(model:      nn.Module,
         
         total_eval_loss += loss.item()
         
-        # Calculate accuracy
+        # Calculate accuracy, precision, recall, F1
         predictions = torch.argmax(logits, dim=1)
         accuracy = (predictions == labels).float().mean().item()
         total_eval_accuracy += accuracy
+
+        TP += (predictions[labels==1] == 1).float().sum().item()
+        TN += (predictions[labels==0] == 0).float().sum().item()
+        FP += (labels[predictions==1] == 0).float().sum().item()
+        FN += (labels[predictions==0] == 1).float().sum().item()
         
         progress_bar.set_description(f"Evaluating - Loss: {loss.item():.4f}, Acc: {accuracy:.4f}")
     
     # Calculate average accuracy and loss
     avg_val_accuracy = total_eval_accuracy / len(dataloader)
     avg_val_loss = total_eval_loss / len(dataloader)
+    precision, recall = FP/(TP+FP), TP/(TP+FN)
+    F1 = 2*precision*recall / (precision + recall)
     
-    return avg_val_accuracy, avg_val_loss
+    return avg_val_accuracy, avg_val_loss, F1
 
 
 '''
@@ -150,10 +158,9 @@ Load a pretrained model for evaluation
 '''
 def load_bert_model(fname: str = "fine_tuned_bert_model"):
     model_save_path = os.path.join('saved_models', fname)
-    model = BertForSequenceClassification.from_pretrained(
-        model_save_path
-    )
-    return model
+    model = BertForSequenceClassification.from_pretrained(model_save_path)
+    tokenizer = BertTokenizer.from_pretrained(model_save_path)
+    return model, tokenizer
 
 '''
 Args:

@@ -2,9 +2,11 @@ import argparse
 import torch
 
 from sklearn.model_selection  import train_test_split
+
 from torchinfo                import summary
 from torch.optim              import Adam
 from torch.utils.data         import DataLoader
+
 from transformers             import BertTokenizer, BertForSequenceClassification
 from transformers             import get_linear_schedule_with_warmup
 
@@ -188,16 +190,41 @@ and compare the accuracy in extrapolating to clickhole headlines
 with trump mentioned
 '''
 def evaluate():
-    df     = SarcasticTrumpDataset.getSarcasmDataset()
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-    trump_dataset = SentimentDataset(dataframe=df,
-                                     tokenizer=tokenizer)
-    trump_dataloader = DataLoader(trump_dataset, batch_size=128)
+    # load models and tokenizers
+    model_unwgt, tokenizer_unwgt = load_bert_model("fine_tuned_bert_model")
+    model_wgt,   tokenizer_wgt   = load_bert_model("fine_tuned_bert_model_wgt")
+
+    # compute F1 score of the trained models
+    df = SentimentDataset.getSarcasmDataset()
+
+    full_dataset_unwgt = SentimentDataset(dataframe=df,
+                                          tokenizer=tokenizer_unwgt)
+    full_dataloader_unwgt = DataLoader(full_dataset_unwgt,
+                                       batch_size=128)
+    acc, _, f1_unwgt = evaluateModel(model_unwgt, full_dataloader_unwgt)
+
+    full_dataset_wgt = SentimentDataset(dataframe=df,
+                                        tokenizer=tokenizer_wgt)
+    full_dataloader_wgt = DataLoader(full_dataset_wgt,
+                                     batch_size=128)
+    acc, _, f1_wgt = evaluateModel(model_wgt, full_dataloader_wgt)
+
+    print('F1, unweighted: ', f1_unwgt)
+    print('F1, weighted:   ', f1_wgt)
     
-    model_unwgt = load_bert_model("fine_tuned_bert_model")
-    model_wgt   = load_bert_model("fine_tuned_bert_model_wgt")
-    val_accuracy_unwgt, _ = evaluateModel(model_unwgt, trump_dataloader)
-    val_accuracy_wgt,   _ = evaluateModel(model_wgt,   trump_dataloader)
+    # try generalization to a dataset of headlines from Clickhole
+    # which are selected to have trump mentioned
+    df     = SarcasticTrumpDataset.getSarcasmDataset()
+    trump_dataset_unwgt    = SentimentDataset(dataframe=df,
+                                              tokenizer=tokenizer_unwgt)
+    trump_dataloader_unwgt = DataLoader(trump_dataset_unwgt, batch_size=128)
+
+    trump_dataset_wgt      = SentimentDataset(dataframe=df,
+                                              tokenizer=tokenizer_wgt)
+    trump_dataloader_wgt   = DataLoader(trump_dataset_wgt, batch_size=128)
+
+    val_accuracy_unwgt, _, __ = evaluateModel(model_unwgt, trump_dataloader_unwgt)
+    val_accuracy_wgt,   _, __ = evaluateModel(model_wgt,   trump_dataloader_wgt)
     print("Accuracy in extrapolating to trump-centric sarcastic headlines:")
     print("No semantic weighting:  ", val_accuracy_unwgt)
     print("With semantic weighting:", val_accuracy_wgt)
