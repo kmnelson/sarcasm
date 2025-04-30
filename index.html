@@ -145,11 +145,7 @@
             Kevin Nelson | April 30, 2025
         </div>
     </header>
-    
-    <div class="abstract">
-        <strong>Abstract:</strong> 
-    </div>
-    
+      
     <h2>Introduction</h2>
     <p>
       This repository studies improvements in generalization of fine-tuned BERT [1] models on sarcasm detection.  The sarcasm detection dataset used consists of headlines from The Onion and HuffPost [2].  The distribution of individual features in the data was highly skewed: for example, the words "Donald" or "Trump" almost exclusively occured in the HuffPost headlines, and rarely in headlines from The Onion.  Of course, this may lead to a model which predicts any sentence referencing Donald Trump to not be sarcastic, while some of them may be.  In order to address this, the dataset was weighted to balance the individual feature frequency across the headlines from The Onion and HuffPost.  Then, the two trained models were compared on a dataset of headlines from a sibling publication of The Onion, Clickhole, to test if any improvement in Trump-centric sarcasm was measured.
@@ -199,11 +195,11 @@
     </p>
 
     <div class="figure-container">
-        <img src="/api/placeholder/600/350" alt="Trump-centered sarcasm" class="figure">
+        <img src="figures/frequencyVsTrumpWeighted.png" alt="Trump-centered sarcasm" class="figure">
         <p class="caption"><strong>Figure 3:</strong> Top words in the sarcastic and non-sarcastic datasets, compared to a sample of Trump-centric sarcasm.</p>
     </div>
 
-    Finally, BERT models are fine-tuned using a cross-entropy loss with the weighted and unweighted datasets.  The two models are then tested for accuracy on the Trump-centric sarcasm dataset.  The accuracy is 22% for the unweighted model, and 25% for the weighted model.  Simultaneously, the weighted model has a higher F1 score on the original sarcasm dataset by 20%, suggesting that the model is learning deeper features because it is performing better on both the training and validation/testing sets.
+    Finally, BERT models are fine-tuned using a cross-entropy loss with the weighted and unweighted datasets.  The pre-trained BERT model used has 100M tunable parameters.  The two models are then tested for accuracy on the Trump-centric sarcasm dataset.  The accuracy is 22% for the unweighted model, and 25% for the weighted model.  Simultaneously, the weighted model has a higher F1 score on the original sarcasm dataset by 20%, suggesting that the model is learning deeper features because it is performing better on both the training and validation/testing sets.
     
     <div class="conclusion">
         <h3>Conclusion</h3>
@@ -215,7 +211,7 @@
     <div class="references">
         <h2>References</h2>
         <ol>
-	    <li>Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova <a href="https://arxiv.org/abs/1810.04805"></a>BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</li>
+	    <li>Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova <a href="https://arxiv.org/abs/1810.04805">BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</a></li>
             <li>Rishabh Misra <a href="https://www.kaggle.com/datasets/rmisra/news-headlines-dataset-for-sarcasm-detection/data">News Headlines Dataset For Sarcasm Detection</a></li>
         </ol>
     </div>
