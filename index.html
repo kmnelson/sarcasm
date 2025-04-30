@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BERT Fine Tuning</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        
+        header {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 20px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #3498db;
+            font-size: 1.8em;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        h3 {
+            color: #2980b9;
+            font-size: 1.4em;
+            margin-top: 25px;
+        }
+        
+        .author-info {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        
+        .abstract {
+            background-color: #f0f0f0;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+        
+        .figure-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .figure {
+            max-width: 100%;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        
+        .caption {
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 10px;
+            padding: 0 30px;
+            text-align: center;
+        }
+        
+        .caption strong {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        blockquote {
+            background-color: #f8f9fa;
+            border-left: 4px solid #6c757d;
+            padding: 15px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        
+        code {
+            background-color: #f0f0f0;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        pre {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            border: 1px solid #ddd;
+        }
+        
+        .references {
+            margin-top: 40px;
+            border-top: 1px solid #ddd;
+            padding-top: 20px;
+        }
+        
+        .references h2 {
+            margin-bottom: 15px;
+        }
+        
+        .references ol {
+            padding-left: 20px;
+        }
+        
+        .references li {
+            margin-bottom: 10px;
+        }
+        
+        .conclusion {
+            margin: 30px 0;
+            padding: 15px;
+            background-color: #e8f4fc;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Fine Tuning BERT on the Sarcasm Dataset and Domain Adaptation</h1>
+        <div class="author-info">
+            Kevin Nelson | April 30, 2025
+        </div>
+    </header>
+    
+    <div class="abstract">
+        <strong>Abstract:</strong> 
+    </div>
+    
+    <h2>Introduction</h2>
+    <p>
+      This repository studies improvements in generalization of fine-tuned BERT models on sarcasm detection.  The sarcasm detection dataset used consists of headlines from The Onion and HuffPost.  The distribution of individual features in the data was highly skewed: for example, the words "Donald" or "Trump" almost exclusively occured in the HuffPost headlines, and rarely in headlines from The Onion.  Of course, this may lead to a model which predicts any sentence referencing Donald Trump to not be sarcastic, while some of them may be.  In order to address this, the dataset was weighted to balance the individual feature frequency across the headlines from The Onion and HuffPost.  Then, the two trained models were compared on a dataset of headlines from a sibling publication of The Onion, Clickhole, to test if any improvement in Trump-centric sarcasm was measured.
+    </p>
+    
+    <p>
+        The main questions addressed were:
+    </p>
+    <ul>
+        <li>Can BERT be fine-tuned to detect sarcasm?</li>
+        <li>Can we understand if BERT is optimizing for the presence of specific features, or if it learns the higher level concept of sarcasm?</li>
+    </ul>
+    
+    <h2>Methodology</h2>
+    <p>
+      
+    </p>
+    
+    <div class="figure-container">
+        <img src="/api/placeholder/600/400" alt="Research methodology diagram" class="figure">
+        <p class="caption"><strong>Figure 1:</strong> </p>
+    </div>
+    
+    <h2>Key Findings</h2>
+    
+    <h3>Finding 1: </h3>
+    <p>
+
+    </p>
+        
+    <div class="conclusion">
+        <h3>Conclusion</h3>
+        <p>
+	  The findings suggest that generalization was improved when the weighted dataset was used.  The F1 score on the original dataset was simultaneously improved, suggesting that rather than picking up on individual features the BERT model fine-tuned with weights is more likely to extract higher level meaning from the dataset.
+        </p>
+    </div>
+    
+    <div class="references">
+        <h2>References</h2>
+        <ol>
+            <li>Rishabh Misra <a href="https://www.kaggle.com/datasets/rmisra/news-headlines-dataset-for-sarcasm-detection/data">News Headlines Dataset For Sarcasm Detection</a></li>
+        </ol>
+    </div>
+</body>
+</html>

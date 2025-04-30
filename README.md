@@ -1,1 +1,0 @@
-![](https://github.com/kmnelson/sarcasm/blob/main/frequencyNonSarcasticUnweighted.pdf?raw=true)
