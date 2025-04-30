@@ -39,26 +39,26 @@ def visualizeData(show: bool):
     # Plot the unweighted data for word length
     wireHistogram(ds.df, x='length', hue='is_sarcastic',
                   bins=[i for i in range(25)],
-                  fname='unweightedLength.pdf',
+                  fname='unweightedLength',
                   show=show)
     
     # Plot the weighted data for word length
     wireHistogram(ds.df, x='length', hue='is_sarcastic', weights='weight',
                   bins=[i for i in range(25)],
-                  fname='weightedLength.pdf',
+                  fname='weightedLength',
                   show=show)
     
     # Plot the values of the weights
     wireHistogram(ds.df, x='weight', hue='is_sarcastic',
                   bins=[float(i)/10 for i in range(25)],
-                  fname='weights.pdf',
+                  fname='weights',
                   show=show)
     
     # Plot the frequency of top sarcastic words
     word_freq_sarc, word_freq_not_sarc = wt.getFrequencyTables(is_sarcastic=True)
     horizontal_bar([word_freq_sarc, word_freq_not_sarc],
                    ['Sarcastic', 'Not Sarcastic'],
-                   fname='frequencySarcasticUnweighted.pdf',
+                   fname='frequencySarcasticUnweighted',
                    show=show)
     
     # Plot the frequency of top non-sarcastic words
@@ -66,7 +66,7 @@ def visualizeData(show: bool):
     horizontal_bar([word_freq_sarc, word_freq_not_sarc],
                    ['Sarcastic', 'Not Sarcastic'],
                    title="Top non-sarcastic words",
-                   fname='frequencyNonSarcasticUnweighted.pdf',
+                   fname='frequencyNonSarcasticUnweighted',
                    show=show)
 
 
@@ -75,7 +75,7 @@ def visualizeData(show: bool):
     horizontal_bar([word_freq_sarc, word_freq_not_sarc],
                    ['Sarcastic', 'Not Sarcastic'],
                    title="Top Non-Sarcastic, After normalization",
-                   fname='frequencyNonSarcasticWeighted.pdf',
+                   fname='frequencyNonSarcasticWeighted',
                    show=show)
     
     
@@ -85,7 +85,7 @@ def visualizeData(show: bool):
     horizontal_bar([word_freq_sarc, word_freq_not_sarc],
                    ['Sarcastic', 'Not Sarcastic'],
                    title="After normalization",
-                   fname="frequencySarcasticWeighted.pdf",
+                   fname="frequencySarcasticWeighted",
                    show=show)
 
     # Compare word frequency to the trump clickhole dataset
@@ -96,7 +96,7 @@ def visualizeData(show: bool):
     horizontal_bar([word_freq_sarc, word_freq_not_sarc, trump_freq_sarc],
                    ['Sarcastic', 'Not Sarcastic', 'Sarcastic, Trump'],
                    title='Comparison to Trump-centric sarcasm',
-                   fname='frequencyVsTrumpWeighted.pdf',
+                   fname='frequencyVsTrumpWeighted',
                    show=show)
 
 '''

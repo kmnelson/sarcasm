@@ -47,7 +47,8 @@ def wireHistogram(dataframe: pd.DataFrame,
                  )
     setup_minor_ticks(ax)
 
-    plt.savefig(os.path.join('figures', fname))
+    plt.savefig(os.path.join('figures', fname + '.pdf'))
+    plt.savefig(os.path.join('figures', fname + '.png'))
     if show: plt.show()
 
 '''
@@ -115,6 +116,7 @@ def horizontal_bar(freq: list[list[list]],
     plt.yticks(ticks=range(len(df_combined['word'].unique())))
     
     # Show plot
-    plt.savefig(os.path.join('figures', fname))
+    plt.savefig(os.path.join('figures', fname + '.pdf'))
+    plt.savefig(os.path.join('figures', fname + '.png'))
     if show: plt.show()
     
