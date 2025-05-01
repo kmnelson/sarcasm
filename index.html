@@ -199,12 +199,12 @@
         <p class="caption"><strong>Figure 3:</strong> Top words in the sarcastic and non-sarcastic datasets, compared to a sample of Trump-centric sarcasm.</p>
     </div>
 
-    Finally, BERT models are fine-tuned using a cross-entropy loss with the weighted and unweighted datasets.  The pre-trained BERT model used has 100M tunable parameters.  The two models are then tested for accuracy on the Trump-centric sarcasm dataset.  The accuracy is 22% for the unweighted model, and 25% for the weighted model.  Simultaneously, the weighted model has a higher F1 score on the original sarcasm dataset by 20%, suggesting that the model is learning deeper features because it is performing better on both the training and validation/testing sets.
+    Finally, BERT models are fine-tuned using a cross-entropy loss with the weighted and unweighted datasets.  The pre-trained BERT model used has 100M tunable parameters and is fine-tuned for 20 epochs.  The two models are then tested for accuracy on the Trump-centric sarcasm dataset.  The accuracy is 25% for the unweighted model, and 29% for the weighted model.  Simultaneously, the weighted model maintains and F1 score of 0.975, equal to the unweighted model, suggesting that the model is learning deeper features because it maintains training performance and improves in generalization.
     
     <div class="conclusion">
         <h3>Conclusion</h3>
         <p>
-	  The findings suggest that generalization was improved when the weighted dataset was used.  The F1 score on the original dataset was simultaneously improved, suggesting that rather than picking up on individual features the BERT model fine-tuned with weights is more likely to extract higher level meaning from the dataset.
+	  The findings suggest that generalization was improved when the weighted dataset was used.  The F1 score on the original dataset was maintained, suggesting that rather than picking up on individual features the BERT model fine-tuned with weights is more likely to extract higher level meaning from the dataset.
         </p>
     </div>
     
