@@ -133,7 +133,7 @@ def evaluateModel(model:      nn.Module,
     # Calculate average accuracy and loss
     avg_val_accuracy = total_eval_accuracy / len(dataloader)
     avg_val_loss = total_eval_loss / len(dataloader)
-    precision, recall = FP/(TP+FP), TP/(TP+FN)
+    precision, recall = TP/(TP+FP), TP/(TP+FN)
     F1 = 2*precision*recall / (precision + recall)
     
     return avg_val_accuracy, avg_val_loss, F1

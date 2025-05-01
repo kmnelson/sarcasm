@@ -150,7 +150,7 @@ def train(wgt: bool = False):
     optimizer = Adam(model.parameters(), lr=2e-5, eps=1e-8)
     
     # Number of training epochs
-    epochs = 4
+    epochs = 20
     
     # Total number of training steps
     total_steps = len(train_dataloader) * epochs
@@ -175,7 +175,7 @@ def train(wgt: bool = False):
         print(f'Training loss: {train_loss:.4f}')
         
         # Evaluate
-        val_accuracy, val_loss = evaluateModel(model, val_dataloader)
+        val_accuracy, val_loss, _ = evaluateModel(model, val_dataloader)
         print(f'Validation loss: {val_loss:.4f}')
         print(f'Validation accuracy: {val_accuracy:.4f}')
         print('')
